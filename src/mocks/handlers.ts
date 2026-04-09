@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { mockTickets, mockMetrics, mockRequestTypes, mockComponents, mockChecklistTemplates, ME } from './data';
+import { mockTickets, mockRequestTypes, mockComponents, mockChecklistTemplates, ME } from './data';
 import type { TicketDetail } from '../types/ticket';
 
 let tickets = structuredClone(mockTickets);

@@ -22,7 +22,7 @@ export function MetricsBar() {
         >
           <span className="text-[15px]">{c.icon}</span>
           <div>
-            <div className="text-lg font-extrabold leading-none">{metrics ? (metrics as Record<string, unknown>)[c.key] as number : '–'}</div>
+            <div className="text-lg font-extrabold leading-none">{metrics ? metrics[c.key] : '–'}</div>
             <div className="text-[10px] text-gray-500 mt-0.5">{c.label}</div>
           </div>
         </button>

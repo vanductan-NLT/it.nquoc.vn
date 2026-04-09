@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useStore } from '../../store/useStore';
-import { SEV_COLORS, STATUS_LABELS, STATUS_STYLES, slaStateColor, slaTextColor, slaStr } from '../../lib/utils';
+import { SEV_COLORS, STATUS_LABELS, STATUS_STYLES, slaTextColor, slaStr } from '../../lib/utils';
 import type { TicketInboxItem } from '../../types/ticket';
 
 function MyWorkCard({ ticket: t }: { ticket: TicketInboxItem }) {
