@@ -45,21 +45,24 @@ export function slaTextColor(state: string): string {
 }
 
 export function slaStr(sla: SLAInfo, status: TicketStatus): string {
-  if (status === 'done' || status === 'verified') return '✓ Done';
-  if (status === 'cancelled') return 'Cancelled';
-  if (sla.minutes_left < 0) return `⚠ Breach ${Math.abs(sla.minutes_left / 60).toFixed(1)}h`;
+  if (status === 'done' || status === 'verified') return '✓ Hoàn thành';
+  if (status === 'cancelled') return 'Đã hủy';
+  if (sla.minutes_left < 0) {
+    const hrs = Math.abs(sla.minutes_left / 60);
+    return `⚠ Quá hạn ${hrs < 1 ? Math.round(hrs * 60) + ' phút' : hrs.toFixed(1) + ' giờ'}`;
+  }
   const hrs = sla.minutes_left / 60;
-  if (hrs > 72) return `${Math.round(hrs / 24)}d`;
-  if (hrs < 4) return `⚠ ${hrs.toFixed(1)}h`;
-  return `⏱ ${hrs.toFixed(1)}h`;
+  if (hrs > 72) return `Còn ${Math.round(hrs / 24)} ngày`;
+  if (hrs < 4) return `⚠ Còn ${hrs < 1 ? Math.round(hrs * 60) + ' phút' : hrs.toFixed(1) + ' giờ'}`;
+  return `⏱ Còn ${hrs.toFixed(1)} giờ`;
 }
 
 export function timeAgo(dateStr: string): string {
   const mins = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  if (mins < 1440) return `${Math.floor(mins / 60)}h ago`;
-  return `${Math.floor(mins / 1440)}d ago`;
+  if (mins < 1) return 'vừa xong';
+  if (mins < 60) return `${mins} phút trước`;
+  if (mins < 1440) return `${Math.floor(mins / 60)} giờ trước`;
+  return `${Math.floor(mins / 1440)} ngày trước`;
 }
 
 export function fmtSize(bytes: number | null): string {

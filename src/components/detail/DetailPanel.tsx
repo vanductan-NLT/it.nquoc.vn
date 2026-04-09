@@ -18,12 +18,17 @@ export function DetailPanel() {
 
   if (!t) {
     return (
-      <div className="flex-1 flex items-center justify-center flex-col gap-3 min-w-0 px-8">
-        <div className="text-5xl opacity-10">🎫</div>
-        <div className="text-sm font-semibold text-text-muted">Chọn ticket bên trái để xem chi tiết</div>
-        <div className="text-[11px] text-text-disabled">
-          Dùng phím <kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded text-[10px] font-mono">↑</kbd>{' '}
-          <kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded text-[10px] font-mono">↓</kbd> để chọn ticket
+      <div className="flex-1 flex items-center justify-center flex-col gap-4 min-w-0 px-8 bg-surface/30">
+        <div className="text-6xl drop-shadow-lg">✨</div>
+        <div className="text-center">
+          <h2 className="text-xl font-bold tracking-tight text-text-primary mb-1">Hệ thống sẵn sàng!</h2>
+          <p className="text-sm font-medium text-text-secondary">Hãy chọn một thẻ nhiệm vụ bên trái để bắt đầu làm việc nhé.</p>
+        </div>
+        <div className="flex items-center gap-2 mt-4 px-3 py-2 bg-surface-alt border border-border rounded-lg text-[11px] text-text-muted">
+          <span>Mẹo nhỏ: Dùng phím</span>
+          <kbd className="px-1.5 py-0.5 bg-surface border border-border rounded text-[10px] font-mono font-bold">↑</kbd>
+          <kbd className="px-1.5 py-0.5 bg-surface border border-border rounded text-[10px] font-mono font-bold">↓</kbd>
+          <span>để chuyển qua lại các thẻ.</span>
         </div>
       </div>
     );
@@ -51,7 +56,11 @@ export function DetailPanel() {
       {/* Header — compact */}
       <div className="px-5 py-3 border-b border-border shrink-0 bg-surface">
         {/* Breadcrumb */}
-        <div className="text-[10px] text-text-disabled mb-1.5">{emoji} {t.team_id} › {t.request_type} › <span className="font-mono">{t.id.slice(-8)}</span></div>
+        <div className="text-[10px] text-text-disabled mb-1.5 flex flex-wrap gap-1 items-center">
+          <span className="font-medium text-text-secondary">{emoji} Phòng ban: {t.team_id.toUpperCase()}</span>
+          <span className="opacity-50">/</span>
+          <span className="font-medium text-text-secondary">Loại: {t.request_type}</span>
+        </div>
 
         {/* Title row + actions */}
         <div className="flex items-start gap-3 mb-2.5">
@@ -66,8 +75,8 @@ export function DetailPanel() {
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
-            <button onClick={() => openTelegram(t.id)} className="bg-tg-surface border border-tg-border rounded-lg px-3 py-1.5 text-[11px] font-semibold text-green-400 cursor-pointer hover:opacity-80 transition-opacity min-h-[34px]">
-              📱
+            <button onClick={() => openTelegram(t.id)} className="flex items-center gap-1.5 bg-tg-surface border border-tg-border rounded-lg px-3 py-1.5 text-[11px] font-semibold text-green-400 cursor-pointer hover:opacity-80 transition-opacity min-h-[34px]" title="Liên hệ qua Telegram">
+              📱 Gửi Telegram
             </button>
             {primaryAction && (
               <button onClick={primaryAction.onClick} className={`border-0 rounded-lg px-4 py-1.5 text-[11px] font-bold cursor-pointer transition-all min-h-[34px] ${primaryAction.cls}`}>

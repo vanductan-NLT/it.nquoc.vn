@@ -53,10 +53,10 @@ export function Header() {
         </button>
         <button
           onClick={() => setCmdOpen(true)}
-          className="min-h-[32px] px-2 flex items-center justify-center text-[11px] text-text-secondary bg-surface-alt border border-border rounded-md font-mono cursor-pointer hover:border-border-strong hover:text-text-primary transition-all"
-          title="Tìm kiếm nhanh"
+          className="min-h-[32px] px-2.5 flex items-center justify-center gap-1.5 text-[11px] text-text-secondary bg-surface-alt border border-border rounded-md font-medium cursor-pointer hover:border-border-strong hover:text-text-primary transition-all"
+          title="Tìm kiếm nhanh (⌘K)"
         >
-          ⌘K
+          🔍 <span className="hidden sm:inline">Tìm kiếm</span> <span className="text-[10px] opacity-60 font-mono pl-1">⌘K</span>
         </button>
         <span className="text-[10px] font-bold text-purple-400 bg-purple-500/12 border border-purple-500/25 rounded-full px-2.5 py-1">IT TEAM</span>
         <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-[11px] font-bold text-white cursor-pointer hover:opacity-90 transition-opacity" title="Nguyen Van IT">NV</div>
