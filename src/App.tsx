@@ -9,6 +9,7 @@ import { DetailPanel } from './components/detail/DetailPanel';
 import { MyWorkView } from './components/mywork/MyWorkView';
 import { TelegramPanel } from './components/overlays/TelegramPanel';
 import { ClaimModal } from './components/overlays/ClaimModal';
+import { ConfirmDoneModal } from './components/overlays/ConfirmDoneModal';
 import { CommandPalette } from './components/overlays/CommandPalette';
 import { KeyboardShortcuts } from './components/overlays/KeyboardShortcuts';
 import { Toast } from './components/overlays/Toast';
@@ -42,6 +43,7 @@ export default function App() {
       {/* Overlays */}
       <TelegramPanel />
       <ClaimModal />
+      <ConfirmDoneModal />
       <CommandPalette />
       <KeyboardShortcuts />
       <Toast />

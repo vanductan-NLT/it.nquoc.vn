@@ -34,8 +34,8 @@ export function ClaimModal() {
         </div>
 
         <div className="flex gap-2">
-          <button onClick={closeClaimModal} className="bg-[#111827] border border-[#1F2937] rounded-lg px-4 py-2.5 text-[13px] text-gray-500 cursor-pointer hover:border-[#2D3748] hover:text-white">Huỷ</button>
-          <button onClick={() => claimTicket(claimTicketId)} className="flex-1 bg-purple-600 border-0 rounded-lg px-4 py-2.5 text-[13px] text-white font-bold cursor-pointer hover:bg-purple-700">✓ Nhận ticket + Notify user</button>
+          <button onClick={closeClaimModal} className="bg-[#111827] border border-[#1F2937] rounded-xl px-4 py-3 text-[13px] text-gray-400 cursor-pointer hover:border-[#2D3748] hover:text-white transition-all">Để sau</button>
+          <button onClick={() => claimTicket(claimTicketId)} className="flex-1 bg-purple-600 border-0 rounded-xl px-4 py-3 text-[13px] text-white font-bold cursor-pointer hover:bg-purple-700 transition-all">✓ Nhận ticket + Thông báo user</button>
         </div>
       </div>
     </div>

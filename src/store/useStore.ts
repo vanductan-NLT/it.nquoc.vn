@@ -12,40 +12,32 @@ interface MyWork {
 }
 
 interface Store {
-  // View state
   currentView: View;
   setView: (v: View) => void;
 
-  // Tickets
   tickets: TicketDetail[];
   loading: boolean;
   fetchTickets: (params?: Record<string, string>) => Promise<void>;
 
-  // Selected ticket
   selectedId: string | null;
   selectedTicket: TicketDetail | null;
   selectTicket: (id: string | null) => void;
   fetchTicketDetail: (id: string) => Promise<void>;
 
-  // Detail tab
   detailTab: DetailTab;
   setDetailTab: (t: DetailTab) => void;
 
-  // Metrics
   metrics: TicketMetrics | null;
   fetchMetrics: () => Promise<void>;
 
-  // My Work
   myWork: MyWork | null;
   fetchMyWork: () => Promise<void>;
 
-  // Filter
   activeFilter: string;
   setFilter: (f: string) => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
 
-  // Telegram panel
   tgOpen: boolean;
   tgTicketId: string | null;
   tgDraft: string;
@@ -53,28 +45,31 @@ interface Store {
   closeTelegram: () => void;
   setTgDraft: (d: string) => void;
 
-  // Claim modal
   claimModalOpen: boolean;
   claimTicketId: string | null;
   openClaimModal: (id: string) => void;
   closeClaimModal: () => void;
 
-  // Command palette
+  // Confirm Done modal
+  confirmDoneOpen: boolean;
+  confirmDoneTicketId: string | null;
+  openConfirmDone: (id: string) => void;
+  closeConfirmDone: () => void;
+  confirmDoneAction: () => void;
+
   cmdOpen: boolean;
   setCmdOpen: (v: boolean) => void;
 
-  // Keyboard shortcuts overlay
   kbdOpen: boolean;
   setKbdOpen: (v: boolean) => void;
 
-  // Actions
   claimTicket: (id: string) => Promise<void>;
   performAction: (id: string, actionType: string, note?: string) => Promise<void>;
   toggleChecklist: (ticketId: string, checkId: string) => Promise<void>;
 
-  // Toast
   toastMsg: string | null;
-  showToast: (msg: string) => void;
+  toastType: 'success' | 'error' | 'info';
+  showToast: (msg: string, type?: 'success' | 'error' | 'info') => void;
 }
 
 export const useStore = create<Store>((set, get) => ({
@@ -91,8 +86,9 @@ export const useStore = create<Store>((set, get) => ({
     try {
       const res = await api.listTickets(params);
       set({ tickets: res.data as TicketDetail[], loading: false });
-    } catch {
+    } catch (e) {
       set({ loading: false });
+      get().showToast('Không tải được danh sách ticket. Thử lại sau.', 'error');
     }
   },
 
@@ -107,7 +103,9 @@ export const useStore = create<Store>((set, get) => ({
     try {
       const res = await api.getTicket(id);
       set({ selectedTicket: res.data as TicketDetail });
-    } catch { /* noop */ }
+    } catch {
+      get().showToast('Không tải được chi tiết ticket.', 'error');
+    }
   },
 
   detailTab: 'overview',
@@ -118,7 +116,7 @@ export const useStore = create<Store>((set, get) => ({
     try {
       const res = await api.getMetrics();
       set({ metrics: res.data as TicketMetrics });
-    } catch { /* noop */ }
+    } catch { /* metrics fail silently is ok */ }
   },
 
   myWork: null,
@@ -126,7 +124,9 @@ export const useStore = create<Store>((set, get) => ({
     try {
       const res = await api.getMyTickets(true);
       set({ myWork: res.data as MyWork });
-    } catch { /* noop */ }
+    } catch {
+      get().showToast('Không tải được danh sách việc của bạn.', 'error');
+    }
   },
 
   activeFilter: 'all',
@@ -152,6 +152,19 @@ export const useStore = create<Store>((set, get) => ({
   openClaimModal: (id) => set({ claimModalOpen: true, claimTicketId: id }),
   closeClaimModal: () => set({ claimModalOpen: false, claimTicketId: null }),
 
+  // Confirm Done modal
+  confirmDoneOpen: false,
+  confirmDoneTicketId: null,
+  openConfirmDone: (id) => set({ confirmDoneOpen: true, confirmDoneTicketId: id }),
+  closeConfirmDone: () => set({ confirmDoneOpen: false, confirmDoneTicketId: null }),
+  confirmDoneAction: () => {
+    const id = get().confirmDoneTicketId;
+    if (id) {
+      get().performAction(id, 'done');
+      set({ confirmDoneOpen: false, confirmDoneTicketId: null });
+    }
+  },
+
   cmdOpen: false,
   setCmdOpen: (v) => set({ cmdOpen: v }),
 
@@ -169,9 +182,11 @@ export const useStore = create<Store>((set, get) => ({
         claimTicketId: null,
       }));
       get().openTelegram(id, telegram_draft.draft_text);
-      get().showToast('🙋 Đã nhận ticket');
+      get().showToast('🙋 Đã nhận ticket — chuyển sang "Việc của tôi"', 'success');
       get().fetchMetrics();
-    } catch { /* noop */ }
+    } catch {
+      get().showToast('Không nhận được ticket. Có thể đã có người nhận trước.', 'error');
+    }
   },
 
   performAction: async (id, actionType, note) => {
@@ -183,29 +198,49 @@ export const useStore = create<Store>((set, get) => ({
         selectedTicket: s.selectedId === id ? { ...s.selectedTicket!, ...ticket } : s.selectedTicket,
       }));
       if (telegram_draft) get().openTelegram(id, telegram_draft.draft_text);
-      const labels: Record<string, string> = { start: '▶ In Progress', done: '✅ Done', verified: '✓ Verified', reopen: '🔄 Reopened', note: '💬 Note saved', more_info: '❓ More info sent' };
-      get().showToast(labels[actionType] || actionType);
+      const labels: Record<string, string> = {
+        start: '▶ Đang xử lý',
+        done: '✅ Đã hoàn tất',
+        verified: '✓ Đã xác nhận',
+        reopen: '🔄 Đã mở lại',
+        note: '💬 Đã lưu ghi chú',
+        more_info: '❓ Đã gửi yêu cầu thêm thông tin',
+      };
+      get().showToast(labels[actionType] || actionType, 'success');
       get().fetchMetrics();
       get().fetchTicketDetail(id);
-    } catch { /* noop */ }
+      get().fetchTickets();
+    } catch {
+      get().showToast('Không thể thực hiện thao tác. Vui lòng thử lại.', 'error');
+    }
   },
 
   toggleChecklist: async (ticketId, checkId) => {
     const ticket = get().tickets.find(t => t.id === ticketId) || get().selectedTicket;
     if (!ticket) return;
     const updated = ticket.checklist_progress.map(c => c.id === checkId ? { ...c, done: !c.done } : c);
+    // Optimistic update
+    set(s => ({
+      tickets: s.tickets.map(t => t.id === ticketId ? { ...t, checklist_progress: updated } : t),
+      selectedTicket: s.selectedId === ticketId ? { ...s.selectedTicket!, checklist_progress: updated } : s.selectedTicket,
+    }));
     try {
       await api.updateChecklist(ticketId, updated);
+    } catch {
+      // Revert on error
+      const reverted = updated.map(c => c.id === checkId ? { ...c, done: !c.done } : c);
       set(s => ({
-        tickets: s.tickets.map(t => t.id === ticketId ? { ...t, checklist_progress: updated } : t),
-        selectedTicket: s.selectedId === ticketId ? { ...s.selectedTicket!, checklist_progress: updated } : s.selectedTicket,
+        tickets: s.tickets.map(t => t.id === ticketId ? { ...t, checklist_progress: reverted } : t),
+        selectedTicket: s.selectedId === ticketId ? { ...s.selectedTicket!, checklist_progress: reverted } : s.selectedTicket,
       }));
-    } catch { /* noop */ }
+      get().showToast('Không lưu được checklist. Đã hoàn tác.', 'error');
+    }
   },
 
   toastMsg: null,
-  showToast: (msg) => {
-    set({ toastMsg: msg });
-    setTimeout(() => set({ toastMsg: null }), 2600);
+  toastType: 'info',
+  showToast: (msg, type = 'info') => {
+    set({ toastMsg: msg, toastType: type });
+    setTimeout(() => set({ toastMsg: null }), 3000);
   },
 }));

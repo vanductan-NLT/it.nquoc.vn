@@ -22,14 +22,15 @@ export function useKeyboardShortcuts() {
         store.closeTelegram();
         store.setKbdOpen(false);
         store.closeClaimModal();
+        store.closeConfirmDone();
         return;
       }
 
-      const { tickets, selectedId, selectTicket, performAction, openClaimModal, openTelegram } = store;
+      const { tickets, selectedId, selectTicket, performAction, openClaimModal, openTelegram, openConfirmDone } = store;
       const filtered = tickets;
       const idx = filtered.findIndex(t => t.id === selectedId);
 
-      // J/K navigation
+      // Arrow key navigation (more intuitive than j/k for non-tech)
       if (e.key === 'j' || e.key === 'ArrowDown') {
         e.preventDefault();
         const next = Math.min(idx + 1, filtered.length - 1);
@@ -38,19 +39,16 @@ export function useKeyboardShortcuts() {
       }
       if (e.key === 'k' || e.key === 'ArrowUp') {
         e.preventDefault();
-        const prev = Math.max(idx - 1, 0);
+        const prev = Math.max(idx < 0 ? 0 : idx - 1, 0);
         if (filtered[prev]) selectTicket(filtered[prev].id);
         return;
       }
 
       if (!selectedId) return;
 
-      if (e.key === 'e') {
-        // claim
-        openClaimModal(selectedId);
-      }
+      if (e.key === 'e') openClaimModal(selectedId);
       if (e.key === 'p') performAction(selectedId, 'start');
-      if (e.key === 'd') performAction(selectedId, 'done');
+      if (e.key === 'd') openConfirmDone(selectedId); // Confirm before done
       if (e.key === 't' && !e.shiftKey) openTelegram(selectedId);
       if (e.key === 'T' && e.shiftKey) openClaimModal(selectedId);
     };
