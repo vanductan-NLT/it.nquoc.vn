@@ -4,6 +4,21 @@ import { api } from '../lib/api';
 
 type View = 'inbox' | 'mywork';
 type DetailTab = 'overview' | 'checklist' | 'files' | 'activity';
+type ThemePref = 'dark' | 'light' | 'system';
+type ResolvedTheme = 'dark' | 'light';
+
+function getResolvedTheme(pref: ThemePref): ResolvedTheme {
+  if (pref === 'system') return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  return pref;
+}
+
+function applyTheme(resolved: ResolvedTheme) {
+  const el = document.documentElement;
+  el.classList.add('transitioning');
+  el.classList.remove('dark', 'light');
+  el.classList.add(resolved);
+  requestAnimationFrame(() => setTimeout(() => el.classList.remove('transitioning'), 350));
+}
 
 interface MyWork {
   in_progress: TicketInboxItem[];
@@ -66,6 +81,12 @@ interface Store {
   claimTicket: (id: string) => Promise<void>;
   performAction: (id: string, actionType: string, note?: string) => Promise<void>;
   toggleChecklist: (ticketId: string, checkId: string) => Promise<void>;
+
+  // Theme
+  theme: ThemePref;
+  resolvedTheme: ResolvedTheme;
+  setTheme: (t: ThemePref) => void;
+  cycleTheme: () => void;
 
   toastMsg: string | null;
   toastType: 'success' | 'error' | 'info';
@@ -237,6 +258,22 @@ export const useStore = create<Store>((set, get) => ({
     }
   },
 
+  // Theme
+  theme: (localStorage.getItem('it-ops-theme') as ThemePref) || 'system',
+  resolvedTheme: getResolvedTheme((localStorage.getItem('it-ops-theme') as ThemePref) || 'system'),
+  setTheme: (t) => {
+    localStorage.setItem('it-ops-theme', t);
+    const resolved = getResolvedTheme(t);
+    applyTheme(resolved);
+    set({ theme: t, resolvedTheme: resolved });
+  },
+  cycleTheme: () => {
+    const order: ThemePref[] = ['dark', 'light', 'system'];
+    const cur = get().theme;
+    const next = order[(order.indexOf(cur) + 1) % order.length];
+    get().setTheme(next);
+  },
+
   toastMsg: null,
   toastType: 'info',
   showToast: (msg, type = 'info') => {
@@ -244,3 +281,15 @@ export const useStore = create<Store>((set, get) => ({
     setTimeout(() => set({ toastMsg: null }), 3000);
   },
 }));
+
+// Listen for system preference changes
+if (typeof window !== 'undefined') {
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+    const state = useStore.getState();
+    if (state.theme === 'system') {
+      const resolved = getResolvedTheme('system');
+      applyTheme(resolved);
+      useStore.setState({ resolvedTheme: resolved });
+    }
+  });
+}

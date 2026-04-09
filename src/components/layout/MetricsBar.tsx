@@ -11,7 +11,7 @@ export function MetricsBar() {
   const { metrics, activeFilter, setFilter } = useStore();
 
   return (
-    <div className="bg-[#0D1117] border-b border-[#1F2937] px-4 py-2 flex gap-2 shrink-0 items-center overflow-x-auto">
+    <div className="bg-surface border-b border-border px-4 py-2 flex gap-2 shrink-0 items-center overflow-x-auto">
       {cards.map(c => {
         const isActive = activeFilter === c.filter;
         const val = metrics ? metrics[c.key] : 0;
@@ -22,35 +22,26 @@ export function MetricsBar() {
           <button
             key={c.key}
             onClick={() => setFilter(isActive ? 'all' : c.filter)}
-            className={`flex items-center gap-2.5 border rounded-xl px-3.5 py-2 cursor-pointer min-w-[130px] transition-all group ${
+            className={`flex items-center gap-2.5 border rounded-xl px-3.5 py-2 cursor-pointer min-w-[110px] transition-all ${
               isActive
-                ? 'border-purple-600 bg-purple-500/8 shadow-[0_0_12px_rgba(124,58,237,0.15)]'
+                ? 'border-accent bg-accent-muted shadow-sm'
                 : isUrgent
-                  ? 'border-red-500/30 bg-red-500/5 hover:border-red-500/50'
+                  ? 'border-red-500/25 bg-red-500/5 hover:border-red-500/40'
                   : isAtRisk
-                    ? 'border-yellow-500/30 bg-yellow-500/5 hover:border-yellow-500/50'
-                    : 'border-[#1F2937] bg-[#111827] hover:border-[#2D3748] hover:bg-[#161D2A]'
+                    ? 'border-yellow-500/25 bg-yellow-500/5 hover:border-yellow-500/40'
+                    : 'border-border bg-surface-alt hover:border-border-strong hover:bg-surface-hover'
             }`}
           >
             <span className="text-[17px]">{c.icon}</span>
             <div className="text-left">
-              <div className={`text-xl font-extrabold leading-none tabular-nums ${isUrgent ? 'text-red-400' : isAtRisk ? 'text-yellow-300' : ''}`}>
+              <div className={`text-xl font-extrabold leading-none tabular-nums ${isUrgent ? 'text-red-400' : isAtRisk ? 'text-yellow-400' : 'text-text-primary'}`}>
                 {metrics ? val : '–'}
               </div>
-              <div className="text-[10px] text-gray-500 mt-0.5 whitespace-nowrap">{c.label}</div>
+              <div className="text-[10px] text-text-muted mt-0.5 whitespace-nowrap">{c.label}</div>
             </div>
           </button>
         );
       })}
-      <div className="flex-1" />
-      {activeFilter !== 'all' && (
-        <button
-          onClick={() => setFilter('all')}
-          className="bg-[#111827] border border-[#1F2937] rounded-lg px-3 py-1.5 text-[11px] text-gray-400 cursor-pointer hover:border-purple-500/30 hover:text-purple-400 transition-all whitespace-nowrap"
-        >
-          ✕ Bỏ lọc
-        </button>
-      )}
     </div>
   );
 }

@@ -1,52 +1,119 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════
+   DESIGN TOKENS — Claude-inspired warm palette
+   Dark = default. .light class overrides.
+   ══════════════════════════════════════════════════ */
+
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Courier New', monospace;
-  --color-bg: #07090F;
-  --color-s1: #0D1117;
-  --color-s2: #111827;
-  --color-s3: #1C2333;
-  --color-bd: #1F2937;
-  --color-bd2: #2D3748;
-  --color-bd3: #374151;
-  --color-t1: #F9FAFB;
-  --color-t2: #9CA3AF;
-  --color-t3: #6B7280;
-  --color-t4: #374151;
-  --color-purple: #7C3AED;
-  --color-purple-light: #A78BFA;
+
+  /* Surfaces */
+  --color-bg: #1a1a2e;
+  --color-surface: #1e1e36;
+  --color-surface-alt: #252540;
+  --color-surface-hover: #2a2a4a;
+  --color-surface-selected: #2d2854;
+  --color-surface-overlay: #1e1e36;
+
+  /* Borders */
+  --color-border: #33334d;
+  --color-border-strong: #44446a;
+  --color-border-hover: #55558a;
+
+  /* Text */
+  --color-text-primary: #f0f0f5;
+  --color-text-secondary: #a0a0b8;
+  --color-text-muted: #7a7a96;
+  --color-text-disabled: #4a4a60;
+
+  /* Accent */
+  --color-accent: #8b5cf6;
+  --color-accent-hover: #7c3aed;
+  --color-accent-muted: #8b5cf620;
+
+  /* Severity — same in both themes */
   --color-sev-p0: #EF4444;
   --color-sev-p1: #F97316;
   --color-sev-p2: #EAB308;
   --color-sev-p3: #16A34A;
+
+  /* Telegram */
   --color-tg: #1c9a47;
+  --color-tg-surface: #0d2615;
+  --color-tg-border: #1c9a4733;
+
+  /* Pulse (P0 banner) */
+  --color-pulse-from: #2e1a1a;
+  --color-pulse-to: #361e1e;
+
+  /* Scrollbar */
+  --color-scrollbar: #33334d;
 }
+
+/* ── Light Theme Override ── */
+.light {
+  --color-bg: #f8f7f4;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f3f2ee;
+  --color-surface-hover: #eae8e3;
+  --color-surface-selected: #ede9fe;
+  --color-surface-overlay: #ffffff;
+
+  --color-border: #e5e3dc;
+  --color-border-strong: #d1cfc6;
+  --color-border-hover: #c0bdb3;
+
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #5c5c70;
+  --color-text-muted: #8a8a9a;
+  --color-text-disabled: #b8b8c8;
+
+  --color-accent: #7c3aed;
+  --color-accent-hover: #6d28d9;
+  --color-accent-muted: #7c3aed14;
+
+  --color-tg-surface: #ecfdf5;
+  --color-tg-border: #a7f3d0;
+
+  --color-pulse-from: #fef2f2;
+  --color-pulse-to: #fee2e2;
+
+  --color-scrollbar: #d1cfc6;
+}
+
+/* ══════════════════════════════════════════════════
+   BASE STYLES
+   ══════════════════════════════════════════════════ */
 
 html, body, #root {
   height: 100%;
   overflow: hidden;
 }
 
-/* Custom scrollbar */
+/* Scrollbar */
 .custom-scroll::-webkit-scrollbar { width: 4px; }
-.custom-scroll::-webkit-scrollbar-thumb { background: var(--color-bd); border-radius: 2px; }
+.custom-scroll::-webkit-scrollbar-thumb { background: var(--color-scrollbar); border-radius: 2px; }
 .custom-scroll::-webkit-scrollbar-track { background: transparent; }
 
-/* Claim animation */
+/* Animations */
 @keyframes claimOut {
   0% { transform: translateX(0); opacity: 1; }
   100% { transform: translateX(100%); opacity: 0; height: 0; padding: 0; border: none; }
 }
 .claim-anim { animation: claimOut 0.4s forwards; }
 
-/* P0 pulse */
 @keyframes pulseRed {
-  0%, 100% { background: #1a0808; }
-  50% { background: #200a0a; }
+  0%, 100% { background: var(--color-pulse-from); }
+  50% { background: var(--color-pulse-to); }
 }
 .pulse-red { animation: pulseRed 2s infinite; }
 
-/* Telegram panel slide */
-.tg-panel-enter { right: -420px; }
-.tg-panel-open { right: 0; }
+/* Smooth theme transition */
+html.transitioning,
+html.transitioning *,
+html.transitioning *::before,
+html.transitioning *::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease !important;
+}
