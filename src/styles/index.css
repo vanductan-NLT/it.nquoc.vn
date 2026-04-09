@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --color-bg: #07090F;
+  --color-s1: #0D1117;
+  --color-s2: #111827;
+  --color-s3: #1C2333;
+  --color-bd: #1F2937;
+  --color-bd2: #2D3748;
+  --color-bd3: #374151;
+  --color-t1: #F9FAFB;
+  --color-t2: #9CA3AF;
+  --color-t3: #6B7280;
+  --color-t4: #374151;
+  --color-purple: #7C3AED;
+  --color-purple-light: #A78BFA;
+  --color-sev-p0: #EF4444;
+  --color-sev-p1: #F97316;
+  --color-sev-p2: #EAB308;
+  --color-sev-p3: #16A34A;
+  --color-tg: #1c9a47;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Custom scrollbar */
+.custom-scroll::-webkit-scrollbar { width: 4px; }
+.custom-scroll::-webkit-scrollbar-thumb { background: var(--color-bd); border-radius: 2px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* Claim animation */
+@keyframes claimOut {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; height: 0; padding: 0; border: none; }
+}
+.claim-anim { animation: claimOut 0.4s forwards; }
+
+/* P0 pulse */
+@keyframes pulseRed {
+  0%, 100% { background: #1a0808; }
+  50% { background: #200a0a; }
+}
+.pulse-red { animation: pulseRed 2s infinite; }
+
+/* Telegram panel slide */
+.tg-panel-enter { right: -420px; }
+.tg-panel-open { right: 0; }
